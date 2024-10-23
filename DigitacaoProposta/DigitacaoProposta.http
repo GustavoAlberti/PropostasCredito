@@ -1,0 +1,6 @@
+@DigitacaoProposta_HostAddress = http://localhost:5194
+
+GET {{DigitacaoProposta_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
