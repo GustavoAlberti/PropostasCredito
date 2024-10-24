@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
 {
-    public class ConveniadaConfigurationcs : IEntityTypeConfiguration<Conveniada>
+    public class ConveniadaConfiguration : IEntityTypeConfiguration<Conveniada>
     {
         public void Configure(EntityTypeBuilder<Conveniada> builder)
         {

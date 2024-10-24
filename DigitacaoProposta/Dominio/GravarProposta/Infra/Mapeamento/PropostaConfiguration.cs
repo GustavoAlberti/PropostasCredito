@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
 {
-    public class PorpostaConfiguration : IEntityTypeConfiguration<Proposta>
+    public class PropostaConfiguration : IEntityTypeConfiguration<Proposta>
     {
         public void Configure(EntityTypeBuilder<Proposta> builder)
         {
