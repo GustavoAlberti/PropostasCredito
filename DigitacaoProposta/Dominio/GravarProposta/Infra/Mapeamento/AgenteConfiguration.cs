@@ -10,9 +10,8 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
         {
             builder.ToTable("Agentes");
 
-            builder.HasKey(i => i.Id);
+            builder.HasKey(a => a.Id);
 
-            
             builder.Property(a => a.Nome)
                    .IsRequired()
                    .HasMaxLength(50);
@@ -25,7 +24,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
             builder.HasOne<Conveniada>()
                    .WithMany()
                    .HasForeignKey(a => a.ConveniadaId)
-                   .OnDelete(DeleteBehavior.Restrict); // Evita deleção em cascata de conveniadas
+                   .OnDelete(DeleteBehavior.Restrict);
 
 
         }

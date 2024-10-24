@@ -9,10 +9,21 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
         {
             builder.ToTable("Conveniadas");
 
-            builder.HasKey(i => i.Id);
+            builder.HasKey(c => c.Id);
 
+            builder.Property(c => c.Nome)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
+            builder.Property(c => c.AceitaRefinanciamento)
+                   .IsRequired();
 
+            
+            builder.Property(c => c.Uf)
+                   .IsRequired()
+                   .HasMaxLength(2)
+                   .IsFixedLength() 
+                   .HasConversion(uf => uf.ToUpper(), uf => uf);
 
         }
     }
