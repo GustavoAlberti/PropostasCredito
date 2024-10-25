@@ -25,6 +25,15 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
                    .IsRequired()
                    .HasColumnType("decimal(18,2)");
 
+            // Seed Data para Estados com restrições de valor
+            builder.HasData(
+                new Estado(
+                    id: Guid.NewGuid(),
+                    nome: "São Paulo",
+                    uf: "SP",
+                    restricaoDeValor: 100000)
+                );  // Restrição de valor de R$100.000 para SP
+
         }
     }
 }

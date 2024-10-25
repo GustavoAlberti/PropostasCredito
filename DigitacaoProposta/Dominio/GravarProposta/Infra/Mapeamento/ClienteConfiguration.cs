@@ -47,6 +47,19 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
                    .IsRequired()
                    .HasConversion(new EnumToStringConverter<StatusCpf>()) 
                    .HasColumnType("varchar(20)");
+
+            // Seed Data para inserir um Cliente Ativo
+            builder.HasData(new Cliente(
+                id: Guid.NewGuid(),
+                nome: "Cliente Ativo",
+                cpf: "12345678900",
+                dataNascimento: new DateTime(1980, 1, 1),
+                rendimentoMensal: 5000,
+                cidade: "São Paulo",
+                uf: "SP",
+                telefone: "11999999999",
+                email: "cliente@exemplo.com",
+                statusCpf: StatusCpf.Liberado));
         }
     }
 }

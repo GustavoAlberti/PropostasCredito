@@ -64,6 +64,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta
 
             Status = StatusProposta.Rejeitada;
         }
+
     }
 
     // Enum para status da proposta

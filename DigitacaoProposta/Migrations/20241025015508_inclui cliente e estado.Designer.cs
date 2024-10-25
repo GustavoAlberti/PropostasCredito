@@ -4,6 +4,7 @@ using DigitacaoProposta.Dominio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitacaoProposta.Migrations
 {
     [DbContext(typeof(GravarPropostaDbContext))]
-    partial class GravarPropostaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241025015508_inclui cliente e estado")]
+    partial class incluiclienteeestado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,16 +53,6 @@ namespace DigitacaoProposta.Migrations
                     b.HasIndex("ConveniadaId");
 
                     b.ToTable("Agentes", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("feea68ea-57ab-433f-bcf2-f825bf5b36d9"),
-                            ConveniadaId = new Guid("b31c34af-ac07-46b0-ba62-853335ecb140"),
-                            CpfAgente = "12345678901",
-                            Nome = "Agente Ativo",
-                            Status = "Ativo"
-                        });
                 });
 
             modelBuilder.Entity("DigitacaoProposta.Dominio.GravarProposta.Cliente", b =>
@@ -115,7 +108,7 @@ namespace DigitacaoProposta.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5ee2eb04-bc25-4970-bded-5cf8c1ddd98b"),
+                            Id = new Guid("9189cc8a-c268-48b1-ae32-6e6caaaa65b9"),
                             Cidade = "São Paulo",
                             Cpf = "12345678900",
                             DataNascimento = new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -151,15 +144,6 @@ namespace DigitacaoProposta.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Conveniadas", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("b31c34af-ac07-46b0-ba62-853335ecb140"),
-                            AceitaRefinanciamento = true,
-                            Nome = "Conveniada Exemplo",
-                            Uf = "SP"
-                        });
                 });
 
             modelBuilder.Entity("DigitacaoProposta.Dominio.GravarProposta.Estado", b =>
@@ -189,7 +173,7 @@ namespace DigitacaoProposta.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("da92227a-4fec-4772-bebf-35b77f8c043d"),
+                            Id = new Guid("e3fc60d4-7310-4bd6-911a-b6695bf02645"),
                             Nome = "São Paulo",
                             RestricaoDeValor = 100000m,
                             Uf = "SP"
