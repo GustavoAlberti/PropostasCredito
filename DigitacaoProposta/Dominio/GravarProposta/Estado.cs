@@ -22,7 +22,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta
             RequerAssinaturaHibrida = requerAssinaturaHibrida;
         }
 
-        // Método para verificar se o valor está dentro da restrição de valor para o estado
         public bool VerificarRestricaoDeValor(decimal valor)
         {
             return valor <= RestricaoDeValor;

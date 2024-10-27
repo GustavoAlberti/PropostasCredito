@@ -32,10 +32,7 @@ namespace DigitacaoProposta.Dominio
                 {
                     property.SetColumnName(property.Name.ToUpper());
                 }
-
             }
-
         }
-
     }
 }

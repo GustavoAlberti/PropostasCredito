@@ -22,7 +22,7 @@
         bool Refinanciamento,
 
         [Required(ErrorMessage = "A conveniada é obrigatória.")]
-        string Conveniada
+        string CodigoConveniada
 
     );
 

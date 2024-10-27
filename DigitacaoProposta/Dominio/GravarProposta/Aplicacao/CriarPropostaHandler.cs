@@ -1,6 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DigitacaoProposta.Dominio.GravarProposta.Aplicacao.DTO;
 using DigitacaoProposta.Dominio.GravarProposta.Infra;
+using DigitacaoProposta.Dominio.Regras;
+using DigitacaoProposta.Dominio.Regras.DefineTipoAssinatura;
+using DigitacaoProposta.Dominio.Regras.Validacoes;
 
 namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
 {
@@ -16,76 +19,66 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
             if (agente.HasNoValue || agente.Value.Status == StatusAgente.Inativo)
                 return Result.Failure<PropostaResponseDto>("Agente inválido ou inativo.");
 
-            // 2. Validar cliente e status do CPF
+            // 2. Validar cliente
             var cliente = await propostasRepositorio.RecuperarCliente(command.CpfCliente);
             if (cliente.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Cliente inválido.");
 
-            if (cliente.Value.CpfBloqueado())
-                return Result.Failure<PropostaResponseDto>("O CPF do cliente está bloqueado.");
+            // 3. Recuperar conveniada
+            var conveniada = await propostasRepositorio.RecuperarConveniada(command.CodigoConveniada);
+            if (conveniada.HasNoValue)
+                return Result.Failure<PropostaResponseDto>("Conveniada não encontrada.");
 
-            // Validar os dados obrigatórios do cliente
-            if (string.IsNullOrEmpty(cliente.Value.Telefone) || string.IsNullOrEmpty(cliente.Value.Email))
-                return Result.Failure<PropostaResponseDto>("Dados de contato obrigatórios faltando (telefone e email).");
+            // 4. Recuperar estado e verificar restrições de valor
+            var estadoResidencial = await propostasRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
+            var estadoNascimento = await propostasRepositorio.RecuperarEstado(cliente.Value.UfNaturalidade);
 
-            if (cliente.Value.RendimentoMensal <= 0)
-                return Result.Failure<PropostaResponseDto>("Dados de rendimento obrigatórios estão faltando.");
+            if (estadoResidencial.HasNoValue || estadoNascimento.HasNoValue)
+                return Result.Failure<PropostaResponseDto>("Estado residencial ou de nascimento não encontrado.");
 
-            // 3. Verificar se o cliente já tem propostas abertas
+            // 5. Verificar se o cliente já tem propostas abertas
             var propostasAbertas = await propostasRepositorio.ExistePropostaAberta(command.CpfCliente);
             if (propostasAbertas)
                 return Result.Failure<PropostaResponseDto>("Já existe uma proposta aberta para este cliente.");
 
-            // 4. Recuperar conveniada e verificar se aceita refinanciamento
-            var conveniada = await propostasRepositorio.RecuperarConveniada(command.Conveniada);
-            if (conveniada.HasNoValue)
-                return Result.Failure<PropostaResponseDto>("Conveniada não encontrada.");
+            TipoOperacao tipoOperacao = command.Refinanciamento ? TipoOperacao.Refinanciamento : TipoOperacao.ContratoNovo;
 
-            if (command.Refinanciamento && !conveniada.Value.AceitaRefin())
-                return Result.Failure<PropostaResponseDto>("A conveniada não aceita operações de refinanciamento.");
-
-            // 5. Recuperar estado e verificar restrições de valor
-            var estadocliente = await propostasRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
-            if (estadocliente.HasNoValue)
-                return Result.Failure<PropostaResponseDto>("Estado não encontrado.");
-
-            if (!estadocliente.Value.VerificarRestricaoDeValor(command.ValorEmprestimo))
-                return Result.Failure<PropostaResponseDto>("O valor da operação excede o limite permitido no estado.");
-
-            // 6. Verificar se a idade máxima para a última parcela é respeitada
-            var idade = cliente.Value.CalcularIdade();
-
-            if (idade + (command.NumeroParcelas / 12) > 80)
-                return Result.Failure<PropostaResponseDto>("A última parcela excede a idade máxima permitida de 80 anos.");
-
-
-            // 7. Definir o tipo de assinatura
-            TipoAssinatura tipoAssinatura;
-            if (estadocliente.Value.RequerAssinaturaHibrida)
+            var regras = new List<IValidarProposta>()
             {
-                tipoAssinatura = TipoAssinatura.Hibrida;
-            }
-            else if (estadocliente.Value.Ddd == cliente.Value.TelefoneDDD)
+                //dados de cliente
+                new ValidacaoCpfClienteLiberado(),
+                new ValidacaoDadosObrigatoriosCliente(),
+                new ValidacaoIdadeLimite(),
+                //dados de estado
+                new ValidacaoRestricaoValorEstado(),
+                //dados de conveniada:
+                new ValidacaoConveniadaAceitaRefinanciamento(),
+            };
+
+            foreach (var regra in regras)
             {
-                tipoAssinatura = TipoAssinatura.Eletronica;
-            }
-            else
-            {
-                tipoAssinatura = TipoAssinatura.Figital;
+                var resultado = regra.Validar(agente.Value, cliente.Value, conveniada.Value, estadoResidencial.Value, command.ValorEmprestimo, command.NumeroParcelas, tipoOperacao);
+                if (resultado.IsFailure)
+                    return Result.Failure<PropostaResponseDto>(resultado.Error);
             }
 
-            // 8. Criar a proposta no domínio
+            var tipoAssinatura = DefinicaoTipoAssinatura.DeterminarTipoAssinatura(estadoResidencial.Value, estadoNascimento.Value, cliente.Value, tipoOperacao);
+           
+            var dataPrimeiraParcela = DateTime.Now.AddMonths(1);
+            var dataUltimaParcela = dataPrimeiraParcela.AddMonths(command.NumeroParcelas - 1);
+
             var propostaResult = Proposta.Criar(
                 id: Guid.NewGuid(),
                 cpfCliente: command.CpfCliente,
                 valorEmprestimo: command.ValorEmprestimo,
                 numeroParcelas: command.NumeroParcelas,
                 valorParcela: command.ValorEmprestimo / command.NumeroParcelas,
-                dataPrimeiraParcela: DateTime.Now.AddMonths(1),
+                dataPrimeiraParcela: dataPrimeiraParcela,
+                dataUltimaParcela: dataUltimaParcela,
                 agenteId: agente.Value.Id,
                 conveniadaId: conveniada.Value.Id,
                 dataCriacao: DateTime.Now,
-                tipoOperacao: command.Refinanciamento ? TipoOperacao.Refinanciamento : TipoOperacao.ContratoNovo,
+                tipoOperacao: tipoOperacao,
                 tipoAssinatura: tipoAssinatura
             );
 
@@ -93,7 +86,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
             if (propostaResult.IsFailure)
                 return Result.Failure<PropostaResponseDto>(propostaResult.Error);
 
-            // 8. Adicionar a proposta ao banco de dados
             await propostasRepositorio.Adicionar(propostaResult.Value, cancellationToken);
             await propostasRepositorio.Save();
 

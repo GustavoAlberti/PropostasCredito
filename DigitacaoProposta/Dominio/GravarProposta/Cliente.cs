@@ -21,8 +21,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         
         private Cliente() { }
 
-
-
         public Cliente(Guid id, string nome, string cpf, DateTime dataNascimento, decimal rendimentoMensal, string cidadeResidencial, string ufResidencial, string cidadeNaturalidade, string ufNaturalidade, string telefoneDDD, string telefone, string email, Sexo sexo, StatusCpf statusCpf)
         {
             Id = id;
@@ -41,34 +39,12 @@ namespace DigitacaoProposta.Dominio.GravarProposta
             StatusCpf = statusCpf;
         }
 
-        public bool DadosObrigatoriosPreenchidos()
-        {
-            return !string.IsNullOrEmpty(Telefone) &&
-                   !string.IsNullOrEmpty(Email) &&
-                   RendimentoMensal > 0;
-        }
-
-        public bool IdadeValidaParaParcelamento(int numeroParcelas)
-        {
-            var idade = CalcularIdade();
-            return idade + (numeroParcelas / 12) <= 80;
-        }
-
-        public int CalcularIdade()
-        {
-            var hoje = DateTime.Today;
-            var idade = hoje.Year - DataNascimento.Year;
-            if (DataNascimento.Date > hoje.AddYears(-idade)) idade--;
-            return idade;
-        }
-
         public bool CpfBloqueado()
         {
             return StatusCpf == StatusCpf.Bloqueado;
         }
     }
 
-    // Enum para o status do CPF
     public enum StatusCpf
     {
         Liberado,

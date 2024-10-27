@@ -22,7 +22,7 @@ namespace DigitacaoProposta.Controllers
                 ValorEmprestimo: input.ValorEmprestimo,
                 NumeroParcelas: input.NumeroParcelas,
                 Refinanciamento: input.Refinanciamento,
-                Conveniada: input.Conveniada
+                CodigoConveniada: input.CodigoConveniada
             );
 
             var result = await handler.Handle(command, cancellationToken);

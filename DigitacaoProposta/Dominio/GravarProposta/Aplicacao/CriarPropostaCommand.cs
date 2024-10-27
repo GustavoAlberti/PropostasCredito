@@ -6,6 +6,6 @@
         decimal ValorEmprestimo,       
         int NumeroParcelas,            
         bool Refinanciamento,
-        string Conveniada
+        string CodigoConveniada
         );
 }

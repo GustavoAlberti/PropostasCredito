@@ -30,6 +30,9 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
             builder.Property(p => p.DataPrimeiraParcela)
                    .IsRequired();
 
+            builder.Property(p => p.DataUltimaParcela)
+                   .IsRequired();
+
             builder.HasOne<Agente>() 
                    .WithMany()
                    .HasForeignKey(p => p.AgenteId)

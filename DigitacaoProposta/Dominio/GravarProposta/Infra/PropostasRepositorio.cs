@@ -24,9 +24,9 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra
             return (await dbContext.Clientes.FirstOrDefaultAsync(c => c.Cpf == cpf)) ?? Maybe<Cliente>.None;
         }
 
-        public async Task<Maybe<Conveniada>> RecuperarConveniada(string conveniada)
+        public async Task<Maybe<Conveniada>> RecuperarConveniada(string codicoConveniada)
         {
-            return (await dbContext.Conveniadas.FirstOrDefaultAsync(c => c.Nome == conveniada)) ?? Maybe<Conveniada>.None;
+            return (await dbContext.Conveniadas.FirstOrDefaultAsync(c => c.Codigo == codicoConveniada)) ?? Maybe<Conveniada>.None;
         }
 
         public async Task<Maybe<Estado>> RecuperarEstado(string uf)
