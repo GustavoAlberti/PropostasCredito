@@ -8,7 +8,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
     {
         public void Configure(EntityTypeBuilder<Proposta> builder)
         {
-            builder.ToTable("Propostas");
+            builder.ToTable("PROPOSTAS");
 
             builder.HasKey(p => p.Id);
 
@@ -51,6 +51,11 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
             builder.Property(p => p.TipoOperacao)
                    .IsRequired()
                    .HasConversion(new EnumToStringConverter<TipoOperacao>())
+                   .HasColumnType("varchar(20)");
+
+            builder.Property(p => p.TipoAssinatura)
+                   .IsRequired()
+                   .HasConversion(new EnumToStringConverter<TipoAssinatura>())
                    .HasColumnType("varchar(20)");
 
         }

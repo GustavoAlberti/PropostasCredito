@@ -8,29 +8,51 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public string Cpf { get; }
         public DateTime DataNascimento { get; }
         public decimal RendimentoMensal { get; }
-        public string Cidade { get; }
-        public string Uf { get; } // Estado (Unidade Federativa)
+        public string CidadeResidencial { get; }
+        public string UfResidencial { get; }
+        public string CidadeNaturalidade { get; }
+        public string UfNaturalidade { get; }
+        public string TelefoneDDD { get; }
         public string Telefone { get; }
         public string Email { get; }
-        public StatusCpf StatusCpf { get; } // Enum para status do CPF (liberado/bloqueado)
+        public Sexo Sexo { get; }
+        public StatusCpf StatusCpf { get; }
 
         
         private Cliente() { }
 
-        public Cliente(Guid id, string nome, string cpf, DateTime dataNascimento, decimal rendimentoMensal, string cidade, string uf, string telefone, string email, StatusCpf statusCpf)
+
+
+        public Cliente(Guid id, string nome, string cpf, DateTime dataNascimento, decimal rendimentoMensal, string cidadeResidencial, string ufResidencial, string cidadeNaturalidade, string ufNaturalidade, string telefoneDDD, string telefone, string email, Sexo sexo, StatusCpf statusCpf)
         {
             Id = id;
             Nome = nome;
             Cpf = cpf;
             DataNascimento = dataNascimento;
             RendimentoMensal = rendimentoMensal;
-            Cidade = cidade;
-            Uf = uf;
+            CidadeResidencial = cidadeResidencial;
+            UfResidencial = ufResidencial;
+            CidadeNaturalidade = cidadeNaturalidade;
+            UfNaturalidade = ufNaturalidade;
+            TelefoneDDD = telefoneDDD;
             Telefone = telefone;
             Email = email;
+            Sexo = sexo;
             StatusCpf = statusCpf;
         }
 
+        public bool DadosObrigatoriosPreenchidos()
+        {
+            return !string.IsNullOrEmpty(Telefone) &&
+                   !string.IsNullOrEmpty(Email) &&
+                   RendimentoMensal > 0;
+        }
+
+        public bool IdadeValidaParaParcelamento(int numeroParcelas)
+        {
+            var idade = CalcularIdade();
+            return idade + (numeroParcelas / 12) <= 80;
+        }
 
         public int CalcularIdade()
         {
@@ -51,6 +73,13 @@ namespace DigitacaoProposta.Dominio.GravarProposta
     {
         Liberado,
         Bloqueado
+    }
+
+    public enum Sexo
+    {
+        Masculino,
+        Feminino,
+        Outro
     }
 
 }

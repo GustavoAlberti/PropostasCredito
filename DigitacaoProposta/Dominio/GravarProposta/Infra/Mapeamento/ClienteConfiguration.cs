@@ -8,7 +8,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
     {
         public void Configure(EntityTypeBuilder<Cliente> builder)
         {
-            builder.ToTable("Clientes");
+            builder.ToTable("CLIENTES");
 
             builder.HasKey(c => c.Id);
 
@@ -23,17 +23,34 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
             builder.Property(c => c.DataNascimento)
                    .IsRequired();
 
+            builder.Property(c => c.Sexo)
+                   .IsRequired()
+                   .HasConversion(new EnumToStringConverter<Sexo>())
+                   .HasColumnType("varchar(10)");
+
             builder.Property(c => c.RendimentoMensal)
                    .IsRequired()
                    .HasColumnType("decimal(18,2)");
 
-            builder.Property(c => c.Cidade)
+            builder.Property(c => c.CidadeResidencial)
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(c => c.Uf)
+            builder.Property(c => c.UfResidencial)
                    .IsRequired()
-                   .HasMaxLength(2); // Exemplo: "SP", "RJ", etc.
+                   .HasMaxLength(2);
+
+            builder.Property(c => c.CidadeNaturalidade)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(c => c.UfNaturalidade)
+                   .IsRequired()
+                   .HasMaxLength(2);
+
+            builder.Property(c => c.TelefoneDDD)
+                   .IsRequired()
+                   .HasMaxLength(2);
 
             builder.Property(c => c.Telefone)
                    .IsRequired()
@@ -51,15 +68,20 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
             // Seed Data para inserir um Cliente Ativo
             builder.HasData(new Cliente(
                 id: Guid.NewGuid(),
-                nome: "Cliente Ativo",
-                cpf: "12345678900",
-                dataNascimento: new DateTime(1980, 1, 1),
-                rendimentoMensal: 5000,
-                cidade: "São Paulo",
-                uf: "SP",
-                telefone: "11999999999",
-                email: "cliente@exemplo.com",
-                statusCpf: StatusCpf.Liberado));
+                nome: "João Silva",
+                cpf: "12345678901",
+                dataNascimento: new DateTime(1980, 5, 20),
+                rendimentoMensal: 3500.00m,
+                cidadeResidencial: "São Paulo",
+                ufResidencial: "SP",
+                cidadeNaturalidade: "Campinas",
+                ufNaturalidade: "SP",
+                telefoneDDD: "11",
+                telefone: "987654321",
+                email: "joao.silva@example.com",
+                sexo: Sexo.Masculino,
+                statusCpf: StatusCpf.Liberado)     
+           );
         }
     }
 }

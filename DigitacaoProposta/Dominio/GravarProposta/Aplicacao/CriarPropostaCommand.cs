@@ -1,10 +1,11 @@
 ﻿namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
 {
     public record CriarPropostaCommand(
-        string CpfAgente,
-        string CpfCliente,
-        decimal Valor,
-        int QuantidadeParcelas,
-        bool Refinanciamento);
-
+        string CpfAgente,              
+        string CpfCliente,             
+        decimal ValorEmprestimo,       
+        int NumeroParcelas,            
+        bool Refinanciamento,
+        string Conveniada
+        );
 }

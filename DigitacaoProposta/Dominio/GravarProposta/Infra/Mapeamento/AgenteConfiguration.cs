@@ -8,7 +8,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
     {
         public void Configure(EntityTypeBuilder<Agente> builder)
         {
-            builder.ToTable("Agentes");
+            builder.ToTable("AGENTES");
 
             builder.HasKey(a => a.Id);
 
@@ -25,18 +25,18 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra.Mapeamento
                 .HasConversion(new EnumToStringConverter<StatusAgente>())
                 .HasColumnType("varchar(20)");
 
-            builder.HasOne<Conveniada>()
-                   .WithMany()
-                   .HasForeignKey(a => a.ConveniadaId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.Property(a => a.Uf)
+                   .IsRequired()
+                   .HasMaxLength(2)
+                   .IsFixedLength()
+                   .HasConversion(uf => uf.ToUpper(), uf => uf);
 
             // Seed Data para inserir um Agente Ativo
-            builder.HasData(new Agente(
-                id: Guid.NewGuid(),
-                nome: "Agente Ativo",
-                cpfAgente: "12345678901",
-                status: StatusAgente.Ativo,
-                conveniadaId: Guid.Parse("b31c34af-ac07-46b0-ba62-853335ecb140"))); // Use o ID da conveniada correspondente
+            builder.HasData(
+                new Agente(id: Guid.NewGuid(), nome: "Marcio Junior", cpfAgente: "12345678901",status: StatusAgente.Ativo, uf: "SP"),
+                new Agente(id: Guid.NewGuid(), nome: "Maria Rita", cpfAgente: "32165498701", status: StatusAgente.Ativo, uf: "SP"),
+                new Agente(id: Guid.NewGuid(), nome: "Joao Pedro", cpfAgente: "02635418097", status: StatusAgente.Ativo, uf: "RS")
+                );
         }
     }
 }

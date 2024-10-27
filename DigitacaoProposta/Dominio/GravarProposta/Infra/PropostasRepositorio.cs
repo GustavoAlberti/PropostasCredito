@@ -8,7 +8,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra
         GravarPropostaDbContext dbContext)
     {
 
-        //Recupera os dados necessarios para gravar uma proposta valida.
         public async Task<Maybe<Agente>> RecuperarAgente(string cpfAgente)
         {
             return (await dbContext.Agentes.FirstOrDefaultAsync(c => c.CpfAgente == cpfAgente)) ?? Maybe<Agente>.None;
@@ -25,9 +24,9 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra
             return (await dbContext.Clientes.FirstOrDefaultAsync(c => c.Cpf == cpf)) ?? Maybe<Cliente>.None;
         }
 
-        public async Task<Maybe<Conveniada>> RecuperarConveniada(string nome)
+        public async Task<Maybe<Conveniada>> RecuperarConveniada(string conveniada)
         {
-            return (await dbContext.Conveniadas.FirstOrDefaultAsync(c => c.Nome == nome)) ?? Maybe<Conveniada>.None;
+            return (await dbContext.Conveniadas.FirstOrDefaultAsync(c => c.Nome == conveniada)) ?? Maybe<Conveniada>.None;
         }
 
         public async Task<Maybe<Estado>> RecuperarEstado(string uf)
@@ -35,7 +34,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Infra
             return (await dbContext.Estados.FirstOrDefaultAsync(c => c.Uf == uf)) ?? Maybe<Estado>.None;
         }
 
-        //Adiciona a Proposta
         public async Task Adicionar(Proposta proposta, CancellationToken cancellationToken)
         {
             await dbContext.Propostas.AddAsync(proposta, cancellationToken);

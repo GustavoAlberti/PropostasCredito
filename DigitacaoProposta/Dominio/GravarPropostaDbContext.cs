@@ -26,6 +26,15 @@ namespace DigitacaoProposta.Dominio
             modelBuilder.ApplyConfiguration(new EstadoConfiguration());
             modelBuilder.ApplyConfiguration(new PropostaConfiguration());
 
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                foreach (var property in entity.GetProperties())
+                {
+                    property.SetColumnName(property.Name.ToUpper());
+                }
+
+            }
+
         }
 
     }

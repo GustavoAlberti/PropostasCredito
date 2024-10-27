@@ -7,21 +7,20 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public string Nome { get; }
         public string CpfAgente { get; }
         public StatusAgente Status { get; }
-        public Guid ConveniadaId { get; }
+        public string Uf {  get; }
 
         private Agente() { }
 
-        public Agente(Guid id, string nome, string cpfAgente, StatusAgente status, Guid conveniadaId)
+        public Agente(Guid id, string nome, string cpfAgente, StatusAgente status, string uf)
         {
             Id = id;
             Nome = nome;
             CpfAgente = cpfAgente;
             Status = status;
-            ConveniadaId = conveniadaId;
+            Uf = uf;
         }
     }
 
-    // Enum para status do agente
     public enum StatusAgente
     {
         Ativo,

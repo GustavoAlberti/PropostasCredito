@@ -12,13 +12,15 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public Guid AgenteId { get; }
         public Guid ConveniadaId { get; }
         public DateTime DataCriacao { get; }
-        public StatusProposta Status { get; private set; } // Enum para status da proposta
+        public StatusProposta Status { get; private set; }
         public TipoOperacao TipoOperacao { get; }
+        public TipoAssinatura TipoAssinatura { get; }
 
         private Proposta() { }
 
         // Construtor privado que inicializa a proposta
-        private Proposta(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela, DateTime dataPrimeiraParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao)
+        private Proposta(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela, 
+            DateTime dataPrimeiraParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
         {
             Id = id;
             CpfCliente = cpfCliente;
@@ -30,20 +32,20 @@ namespace DigitacaoProposta.Dominio.GravarProposta
             ConveniadaId = conveniadaId;
             DataCriacao = dataCriacao;
             TipoOperacao = tipoOperacao;
-            Status = StatusProposta.Aberta; // Proposta é criada com status "Aberta"
+            Status = StatusProposta.Aberta;
+            TipoAssinatura = tipoAssinatura;
         }
 
-        //Ajustar conforme modelagem de handler
-        public static Result<Proposta> Criar(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela, DateTime dataPrimeiraParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao)
+        public static Result<Proposta> Criar(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela, 
+            DateTime dataPrimeiraParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
         {
             // Inicialmente, sem regras de validação
             
-            var proposta = new Proposta(Guid.NewGuid(), cpfCliente, valorEmprestimo, numeroParcelas, valorParcela, dataPrimeiraParcela, agenteId, conveniadaId, dataCriacao, tipoOperacao);
+            var proposta = new Proposta(id, cpfCliente, valorEmprestimo, numeroParcelas, valorParcela, dataPrimeiraParcela, agenteId, conveniadaId, dataCriacao, tipoOperacao, tipoAssinatura);
 
             return Result.Success(proposta);
         }
 
-        // Método para aprovar a proposta
         public void Aprovar()
         {
             if (Status != StatusProposta.Aberta)
@@ -54,7 +56,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta
             Status = StatusProposta.Aprovada;
         }
 
-        // Método para rejeitar a proposta
         public void Rejeitar()
         {
             if (Status != StatusProposta.Aberta)
@@ -67,7 +68,6 @@ namespace DigitacaoProposta.Dominio.GravarProposta
 
     }
 
-    // Enum para status da proposta
     public enum StatusProposta
     {
         Aberta,
@@ -75,11 +75,17 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         Rejeitada
     }
 
-    // Enum para tipo de operação
     public enum TipoOperacao
     {
         Refinanciamento,
-        Emprestimo
+        ContratoNovo
+    }
+
+    public enum TipoAssinatura
+    {
+        Eletronica,
+        Hibrida,
+        Figital
     }
 
 }
