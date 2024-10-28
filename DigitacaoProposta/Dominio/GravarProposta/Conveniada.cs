@@ -10,6 +10,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public string Uf { get; } 
 
 
+
         private Conveniada() { }
 
         public Conveniada(Guid id, string nome, string codigo, bool aceitaRefinanciamento,string uf)
@@ -21,11 +22,11 @@ namespace DigitacaoProposta.Dominio.GravarProposta
             Uf = uf.ToUpper();
         }
 
-        
+        //Da pra remover é visto na regra
         public bool VerificarRestricaoPorEstado(decimal valorEmprestimo)
         {
             // Regras de restrição baseadas no estado (UF).
-            if (Uf == "RS" && valorEmprestimo > 50000) //No RS, limite de R$ 50.000,00
+            if (Uf == "RS" && valorEmprestimo > 50000) 
             {
                 return false;
             }

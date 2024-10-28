@@ -1,6 +1,7 @@
 using DigitacaoProposta.Dominio;
 using DigitacaoProposta.Dominio.GravarProposta.Aplicacao;
 using DigitacaoProposta.Dominio.GravarProposta.Infra;
+using DigitacaoProposta.Dominio.Regras.Validacoes.Factories;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<GravarPropostaDbContext>(options =>
 
 
 builder.Services.AddScoped<PropostasRepositorio>();
+builder.Services.AddScoped<IPropostaRuleFactory, PropostaRuleFactory>();
 builder.Services.AddScoped<CriarPropostaHandler>();
 
 builder.Services.AddControllers()

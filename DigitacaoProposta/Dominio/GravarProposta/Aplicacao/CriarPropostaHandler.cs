@@ -3,51 +3,55 @@ using DigitacaoProposta.Dominio.GravarProposta.Aplicacao.DTO;
 using DigitacaoProposta.Dominio.GravarProposta.Infra;
 using DigitacaoProposta.Dominio.Regras.DefineTipoAssinatura;
 using DigitacaoProposta.Dominio.Regras.Validacoes;
+using DigitacaoProposta.Dominio.Regras.Validacoes.Factories;
 
 namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
 {
-    public class CriarPropostaHandler(
-        PropostasRepositorio propostasRepositorio)
+    public class CriarPropostaHandler
     {
+        private readonly PropostasRepositorio _propostaRepositorio;
+        private readonly IPropostaRuleFactory _propostaRuleFactory;
+
+        public CriarPropostaHandler(PropostasRepositorio propostaRepositorio, IPropostaRuleFactory propostaRuleFactory)
+        {
+            _propostaRepositorio = propostaRepositorio;
+            _propostaRuleFactory = propostaRuleFactory;
+        }
 
         public async Task<Result<PropostaResponseDto>> Handle(CriarPropostaCommand command, CancellationToken cancellationToken)
         {
-
-            var agente = await propostasRepositorio.RecuperarAgente(command.CpfAgente);
+            var agente = await _propostaRepositorio.RecuperarAgente(command.CpfAgente);
             if (agente.HasNoValue || agente.Value.Status == StatusAgente.Inativo)
                 return Result.Failure<PropostaResponseDto>("Agente inválido ou inativo.");
 
-            var cliente = await propostasRepositorio.RecuperarCliente(command.CpfCliente);
+            var cliente = await _propostaRepositorio.RecuperarCliente(command.CpfCliente);
             if (cliente.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Cliente inválido.");
-
-            var conveniada = await propostasRepositorio.RecuperarConveniada(command.CodigoConveniada);
+            
+            var conveniada = await _propostaRepositorio.RecuperarConveniada(command.CodigoConveniada);
             if (conveniada.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Conveniada não encontrada.");
 
-            var estadoResidencial = await propostasRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
-            var estadoNascimento = await propostasRepositorio.RecuperarEstado(cliente.Value.UfNaturalidade);
+            if (conveniada.Value.Uf != cliente.Value.UfResidencial)
+                return Result.Failure<PropostaResponseDto>("A conveniada não opera no estado de residência do cliente.");
+
+            var estadoResidencialTask = _propostaRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
+            var estadoNascimentoTask = _propostaRepositorio.RecuperarEstado(cliente.Value.UfNaturalidade);
+
+            await Task.WhenAll(estadoResidencialTask, estadoNascimentoTask);
+
+            var estadoResidencial = await estadoResidencialTask;
+            var estadoNascimento = await estadoNascimentoTask;
 
             if (estadoResidencial.HasNoValue || estadoNascimento.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Estado residencial ou de nascimento não encontrado.");
 
-            var propostasAbertas = await propostasRepositorio.ExistePropostaAberta(command.CpfCliente);
+            var propostasAbertas = await _propostaRepositorio.ExistePropostaAberta(command.CpfCliente);
             if (propostasAbertas)
                 return Result.Failure<PropostaResponseDto>("Já existe uma proposta aberta para este cliente.");
 
             TipoOperacao tipoOperacao = command.Refinanciamento ? TipoOperacao.Refinanciamento : TipoOperacao.ContratoNovo;
-
-            var regras = new List<IValidarProposta>()
-            {
-                //dados de cliente
-                new ValidacaoCpfClienteLiberado(),
-                new ValidacaoDadosObrigatoriosCliente(),
-                new ValidacaoIdadeLimite(),
-                //dados de estado
-                new ValidacaoRestricaoValorEstado(),
-                //dados de conveniada:
-                new ValidacaoConveniadaAceitaRefinanciamento(),
-            };
+            var regras = _propostaRuleFactory.ObterRegras(tipoOperacao);
 
             foreach (var regra in regras)
             {
@@ -60,13 +64,14 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
            
             var dataPrimeiraParcela = DateTime.Now.AddMonths(1);
             var dataUltimaParcela = dataPrimeiraParcela.AddMonths(command.NumeroParcelas - 1);
+            var valorParcela = command.ValorEmprestimo / command.NumeroParcelas;
 
             var propostaResult = Proposta.Criar(
                 id: Guid.NewGuid(),
                 cpfCliente: command.CpfCliente,
                 valorEmprestimo: command.ValorEmprestimo,
                 numeroParcelas: command.NumeroParcelas,
-                valorParcela: command.ValorEmprestimo / command.NumeroParcelas,
+                valorParcela: valorParcela,
                 dataPrimeiraParcela: dataPrimeiraParcela,
                 dataUltimaParcela: dataUltimaParcela,
                 agenteId: agente.Value.Id,
@@ -79,11 +84,10 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
             if (propostaResult.IsFailure)
                 return Result.Failure<PropostaResponseDto>(propostaResult.Error);
 
-            await propostasRepositorio.Adicionar(propostaResult.Value, cancellationToken);
-            await propostasRepositorio.Save();
+            await _propostaRepositorio.Adicionar(propostaResult.Value, cancellationToken);
+            await _propostaRepositorio.Save();
 
             var propostaResponse = PropostaResponseDto.FromEntity(propostaResult.Value, agente.Value.Nome, conveniada.Value.Nome);
-
             return Result.Success(propostaResponse);
         }
     }

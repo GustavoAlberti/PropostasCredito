@@ -7,7 +7,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public string Nome { get; }
         public string CpfAgente { get; }
         public StatusAgente Status { get; }
-        public string Uf {  get; }
+        public string Uf {  get; } //podemos remover.
 
         private Agente() { }
 

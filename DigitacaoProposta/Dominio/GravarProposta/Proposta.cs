@@ -13,7 +13,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public Guid AgenteId { get; }
         public Guid ConveniadaId { get; }
         public DateTime DataCriacao { get; }
-        public StatusProposta Status { get; private set; }
+        public StatusProposta Status { get; }
         public TipoOperacao TipoOperacao { get; }
         public TipoAssinatura TipoAssinatura { get; }
 
