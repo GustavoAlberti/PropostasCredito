@@ -1,7 +1,7 @@
 ﻿using DigitacaoProposta.Dominio.GravarProposta.Aplicacao;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using DigitacaoProposta.Dominio.GravarProposta.Aplicacao.DTO;
+using DigitacaoProposta.Dominio.GravarProposta.Aplicacao.InputModel;
 
 namespace DigitacaoProposta.Controllers
 {

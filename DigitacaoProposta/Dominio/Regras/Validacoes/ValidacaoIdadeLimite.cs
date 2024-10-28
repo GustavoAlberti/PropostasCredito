@@ -12,7 +12,7 @@ namespace DigitacaoProposta.Dominio.Regras.Validacoes
 
             int idadeClienteUltimaParcela = dataUltimaParcela.Year - cliente.DataNascimento.Year;
             if (idadeClienteUltimaParcela > 80)
-                return Result.Failure("A última parcela excede a idade máxima permitida de 80 anos");
+                return Result.Failure("A última parcela excede a idade máxima permitida de 80 anos.");
             return Result.Success();
         }
     }

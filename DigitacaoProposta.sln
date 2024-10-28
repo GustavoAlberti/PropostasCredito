@@ -5,7 +5,10 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DigitacaoProposta", "DigitacaoProposta\DigitacaoProposta.csproj", "{D3F5C257-FD6F-4EAB-BAC6-ED2E85AC71EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testes", "Testes\Testes.csproj", "{02854945-8031-4EE6-8A6A-7B59739AA1B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testes", "Testes\Testes.csproj", "{02854945-8031-4EE6-8A6A-7B59739AA1B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D3F5C257-FD6F-4EAB-BAC6-ED2E85AC71EE} = {D3F5C257-FD6F-4EAB-BAC6-ED2E85AC71EE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DigitacaoProposta.Dominio.GravarProposta.Infra
 {
     public sealed class PropostasRepositorio(
-        GravarPropostaDbContext dbContext)
+        GravarPropostaDbContext dbContext) : IService<PropostasRepositorio>
     {
 
         public async Task<Maybe<Agente>> RecuperarAgente(string cpfAgente)

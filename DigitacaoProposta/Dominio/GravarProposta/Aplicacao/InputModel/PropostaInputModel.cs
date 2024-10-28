@@ -1,7 +1,7 @@
-﻿namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao.DTO
-{
-    using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
+namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao.InputModel
+{
     public record PropostaInputModel(
         [Required(ErrorMessage = "O CPF do agente é obrigatório.")]
         [StringLength(11, MinimumLength = 11, ErrorMessage = "O CPF do agente deve ter 11 dígitos.")]
