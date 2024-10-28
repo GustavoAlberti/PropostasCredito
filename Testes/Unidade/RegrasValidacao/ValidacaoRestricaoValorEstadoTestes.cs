@@ -6,7 +6,7 @@ namespace Testes.Unidade.Regras
     public class ValidacaoRestricaoValorEstadoTest
     {
         [Fact]
-        public void Deve_RetornarFalha_QuandoValorExcedeRestricaoDoEstado()
+        public void DeveRetornarFalhaQuandoValorExcedeRestricaoDoEstado()
         {
             // Arrange
             var estado = new Estado(Guid.NewGuid(), "Rio Grande do Sul", "RS", "51", restricaoDeValor: 50000, false);
@@ -22,7 +22,7 @@ namespace Testes.Unidade.Regras
         }
 
         [Fact]
-        public void Deve_Passar_QuandoValorDentroDaRestricaoDoEstado()
+        public void DevePassarQuandoValorDentroDaRestricaoDoEstado()
         {
             // Arrage
             var estado = new Estado(Guid.NewGuid(), "São Paulo", "SP", "11", restricaoDeValor: 100000, true);
