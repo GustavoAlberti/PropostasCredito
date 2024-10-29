@@ -12,6 +12,7 @@ namespace DigitacaoProposta.Dominio.Regras.Validacoes.Factories
                 new ValidacaoDadosObrigatoriosCliente(),
                 new ValidacaoIdadeLimite(),
                 new ValidacaoRestricaoValorEstado(),
+                new ValidacaoConveniadaEstadoCliente()
             };
 
             if (tipoOperacao == TipoOperacao.Refinanciamento)
