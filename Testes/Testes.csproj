@@ -28,4 +28,8 @@
     <ProjectReference Include="..\DigitacaoProposta\DigitacaoProposta.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Unidade\CriarProposta\" />
+  </ItemGroup>
+
 </Project>
