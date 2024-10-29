@@ -6,7 +6,7 @@ using Testes.Integracao.Helper;
 
 namespace Testes.Integracao
 {
-    public class CriarPropostaHandlerIntegrationTest2
+    public class CriarPropostaHandlerIntegrationTestes
     {
         [Fact]
         public async Task DeveCriarPropostaComSucessoQuandoRegrasForemAtendidas()
