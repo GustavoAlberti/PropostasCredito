@@ -32,17 +32,8 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
             if (conveniada.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Conveniada não encontrada.");
 
-            if (conveniada.Value.Uf != cliente.Value.UfResidencial)
-                return Result.Failure<PropostaResponseDto>("A conveniada não opera no estado de residência do cliente.");
-
-            var estadoResidencialTask = _propostaRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
-            var estadoNascimentoTask = _propostaRepositorio.RecuperarEstado(cliente.Value.UfNaturalidade);
-
-            await Task.WhenAll(estadoResidencialTask, estadoNascimentoTask);
-
-            var estadoResidencial = await estadoResidencialTask;
-            var estadoNascimento = await estadoNascimentoTask;
-
+            var estadoResidencial = await _propostaRepositorio.RecuperarEstado(cliente.Value.UfResidencial);
+            var estadoNascimento = await _propostaRepositorio.RecuperarEstado(cliente.Value.UfNaturalidade);
             if (estadoResidencial.HasNoValue || estadoNascimento.HasNoValue)
                 return Result.Failure<PropostaResponseDto>("Estado residencial ou de nascimento não encontrado.");
 
@@ -62,21 +53,13 @@ namespace DigitacaoProposta.Dominio.GravarProposta.Aplicacao
 
             var tipoAssinatura = DefinicaoTipoAssinatura.DeterminarTipoAssinatura(estadoResidencial.Value, estadoNascimento.Value, cliente.Value, tipoOperacao);
            
-            var dataPrimeiraParcela = DateTime.Now.AddMonths(1);
-            var dataUltimaParcela = dataPrimeiraParcela.AddMonths(command.NumeroParcelas - 1);
-            var valorParcela = command.ValorEmprestimo / command.NumeroParcelas;
-
             var propostaResult = Proposta.Criar(
                 id: Guid.NewGuid(),
                 cpfCliente: command.CpfCliente,
                 valorEmprestimo: command.ValorEmprestimo,
                 numeroParcelas: command.NumeroParcelas,
-                valorParcela: valorParcela,
-                dataPrimeiraParcela: dataPrimeiraParcela,
-                dataUltimaParcela: dataUltimaParcela,
                 agenteId: agente.Value.Id,
                 conveniadaId: conveniada.Value.Id,
-                dataCriacao: DateTime.Now,
                 tipoOperacao: tipoOperacao,
                 tipoAssinatura: tipoAssinatura
             );

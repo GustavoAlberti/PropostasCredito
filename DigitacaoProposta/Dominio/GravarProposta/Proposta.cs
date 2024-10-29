@@ -7,7 +7,7 @@ namespace DigitacaoProposta.Dominio.GravarProposta
         public string CpfCliente { get; }
         public decimal ValorEmprestimo { get; }
         public int NumeroParcelas { get; }
-        public decimal ValorParcela { get; }
+        public decimal ValorParcela {  get; }
         public DateTime DataPrimeiraParcela { get; }
         public DateTime DataUltimaParcela { get; }
         public Guid AgenteId { get; }
@@ -19,29 +19,30 @@ namespace DigitacaoProposta.Dominio.GravarProposta
 
         private Proposta() { }
 
-        private Proposta(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela, 
-            DateTime dataPrimeiraParcela, DateTime dataUltimaParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
+        private Proposta(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, 
+            Guid agenteId, Guid conveniadaId, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
         {
             Id = id;
             CpfCliente = cpfCliente;
             ValorEmprestimo = valorEmprestimo;
             NumeroParcelas = numeroParcelas;
-            ValorParcela = valorParcela;
-            DataPrimeiraParcela = dataPrimeiraParcela;
-            DataUltimaParcela = dataUltimaParcela;
+            DataCriacao = DateTime.Now;
+            ValorParcela = ValorEmprestimo / NumeroParcelas;
+            DataPrimeiraParcela = DataCriacao.AddMonths(1);
+            DataUltimaParcela = DataPrimeiraParcela.AddMonths(NumeroParcelas - 1);
             AgenteId = agenteId;
             ConveniadaId = conveniadaId;
-            DataCriacao = dataCriacao;
             TipoOperacao = tipoOperacao;
             Status = StatusProposta.Aberta;
             TipoAssinatura = tipoAssinatura;
-
         }
 
-        public static Result<Proposta> Criar(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas, decimal valorParcela,
-            DateTime dataPrimeiraParcela, DateTime dataUltimaParcela, Guid agenteId, Guid conveniadaId, DateTime dataCriacao, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
+        public static Result<Proposta> Criar(Guid id, string cpfCliente, decimal valorEmprestimo, int numeroParcelas,
+            Guid agenteId, Guid conveniadaId, TipoOperacao tipoOperacao, TipoAssinatura tipoAssinatura)
         {
-            var proposta = new Proposta(id, cpfCliente, valorEmprestimo, numeroParcelas, valorParcela, dataPrimeiraParcela, dataUltimaParcela, agenteId, conveniadaId, dataCriacao, tipoOperacao, tipoAssinatura);
+
+            var proposta = new Proposta(id, cpfCliente, valorEmprestimo, numeroParcelas, agenteId, conveniadaId,
+                                         tipoOperacao, tipoAssinatura);
 
             return Result.Success(proposta);
         }
